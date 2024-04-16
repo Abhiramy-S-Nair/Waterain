@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigned Orders</title>
+    <style>
+        /* Add your CSS styles here */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Assigned Orders</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Order Date</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in delivery_boy_orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.order.user.username }}</td>
+                <td>{{ order.order.total_amount }}</td>
+                <td>
+                    <form method="POST" action="{% url 'update_status' order.id %}">
+                        {% csrf_token %}
+                        
+                        <select name="status">
+                            {% for choice in order.STATUS_CHOICES %}
+                                <option value="{{ choice.0 }}" {% if choice.0 == order.status %} selected {% endif %}>{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Update Status</button>
+                    </form>
+                    
+                    
+                    
+                </td>
+                <td>{{ order.order.created_at|date:"Y-m-d" }}</td>
+                <td>
+                    <ul>
+                        {% for item in order.order.products.all %}
+                        <li>{{ item.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
